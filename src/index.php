@@ -12,9 +12,10 @@ if(empty($_FILES['face'])){
     $tmp_file_name_arr  = explode('.',$filename);
     $new_file_name      = $tmp_file_name_arr[0].'_'.time().'.'.$tmp_file_name_arr[1];
     if(file_exists($_FILES['face']['tmp_name'])){
-        rename( $_FILES['face']['tmp_name'],  'uploads/'.$new_file_name);
-    } else {
         file_put_contents('uploads/'.$new_file_name, file_get_contents($_FILES['face']['tmp_name']));
+    } else {
+        echo 'no';
+        return;
     }
     
     $url                = 'http://'.$_SERVER["HTTP_HOST"].'/uploads/'.$new_file_name;
