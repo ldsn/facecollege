@@ -5,10 +5,13 @@ if(empty($_FILES['face'])){
 } else {
     $filename = $_FILES['face']['name'];
     $tmp_name = $_FILES['face']['tmp_name'];
+    if(!stripos($_FILES['face']['type'],'image')){
+        return;
+    }
 
     $tmp_file_name_arr  = explode('.',$filename);
     $new_file_name      = $tmp_file_name_arr[0].'_'.time().'.'.$tmp_file_name_arr[1];
-    copy($tmp_name, './uploads/'.$new_file_name);
+    move_uploaded_file($tmp_name, 'uploads/'.$new_file_name);
 
     $url                = 'http://'.$_SERVER["HTTP_HOST"].'/uploads/'.$new_file_name;
     $result             = array('status'=>1, 'msg'=>'ok', 'info'=>array('url'=>$url));
