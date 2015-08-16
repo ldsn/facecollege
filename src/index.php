@@ -1,24 +1,27 @@
 <?php
+$hostsae = 'http://facecollege-o.stor.sinaapp.com/';
 if(empty($_FILES['face'])){
     echo 'Welcome to <a href="http://sailboat.ldustu.com">LDSN</a> .';
     return;
 } else {
     $filename = $_FILES['face']['name'];
     $tmp_name = $_FILES['face']['tmp_name'];
-    /*if(!stripos($_FILES['face']['type'],'image')){
+    if(!stripos($_FILES['face']['type'],'image')){
         return;
-    }*/
+    }
 
     $tmp_file_name_arr  = explode('.',$filename);
     $new_file_name      = $tmp_file_name_arr[0].'_'.time().'.'.$tmp_file_name_arr[1];
     if(file_exists($_FILES['face']['tmp_name'])){
-        file_put_contents('uploads/'.$new_file_name, file_get_contents($_FILES['face']['tmp_name']));
+        //file_put_contents('uploads/'.$new_file_name, file_get_contents($_FILES['face']['tmp_name']));
+        savefile($tmpname, $new_file_name);
     } else {
         echo 'no';
         return;
     }
     
-    $url                = 'http://'.$_SERVER["HTTP_HOST"].'/uploads/'.$new_file_name;
+    //$url                = 'http://'.$_SERVER["HTTP_HOST"].'/uploads/'.$new_file_name;
+    $url = $hostsae . $new_file_name;
     $result             = array('status'=>1, 'msg'=>'ok', 'info'=>array('url'=>$url));
     if(!stripos($url, 'localhost')){
         $r                  = detect($url);
@@ -45,3 +48,17 @@ function detect($url){
     $output = curl_exec($ch) ;
     return array('status'=>1, 'output'=>$output );
 }
+
+
+function savefile($f,$f1){
+storage = new SaeStorage();
+$domain = 'o';
+$attr = array('encoding'=>'gzip');
+$result = $storage->upload($domain,$f, $f1, -1, $attr, true);
+}
+
+
+
+
+
+
