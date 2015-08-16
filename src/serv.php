@@ -1,5 +1,5 @@
 <?php
-$http = new swoole_http_server("0.0.0.0", 8080);
+$http = new swoole_http_server("0.0.0.0", 80);
 $http->on('request', function ($request, $response) {
     $header         = $request->header;
     $server         = $request->server;
