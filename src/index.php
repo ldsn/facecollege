@@ -5,9 +5,9 @@ if(empty($_FILES['face'])){
 } else {
     $filename = $_FILES['face']['name'];
     $tmp_name = $_FILES['face']['tmp_name'];
-    if(!stripos($_FILES['face']['type'],'image')){
+    /*if(!stripos($_FILES['face']['type'],'image')){
         return;
-    }
+    }*/
 
     $tmp_file_name_arr  = explode('.',$filename);
     $new_file_name      = $tmp_file_name_arr[0].'_'.time().'.'.$tmp_file_name_arr[1];
