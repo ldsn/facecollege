@@ -30,6 +30,9 @@ function get($request, $response){
         fclose($static_f);
         $response->end();
         return;
+    } else {
+        $response->end('Welcome to <a href="http://sailboat.ldustu.com">LDSN</a>. ');
+        return;
     }
 }
 
