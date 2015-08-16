@@ -3,8 +3,8 @@ if(empty($_FILES['face'])){
     echo 'Welcome to <a href="http://sailboat.ldustu.com">LDSN</a> .';
     return;
 } else {
-    $filename = $_FILES['name'];
-    $tmp_name = $_FILES['tmp_name'];
+    $filename = $_FILES['face']['name'];
+    $tmp_name = $_FILES['face']['tmp_name'];
 
 
     $tmp_file_name_arr  = explode('.',$filename);
@@ -19,7 +19,6 @@ if(empty($_FILES['face'])){
             $result['info']['output']   = $r['output'];
         }
     }   
-    header('Content-Type', 'application/json');
     echo json_encode($result);
     return;
 }
