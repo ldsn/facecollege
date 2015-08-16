@@ -3,6 +3,7 @@ if(empty($_FILES['face'])){
     echo 'Welcome to <a href="http://sailboat.ldustu.com">LDSN</a> .';
     return;
 } else {
+    var_dump($_FILES);
     $filename = $_FILES['face']['name'];
     $tmp_name = $_FILES['face']['tmp_name'];
 
