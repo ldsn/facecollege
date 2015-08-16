@@ -51,7 +51,7 @@ function detect($url){
 
 
 function savefile($f,$f1){
-storage = new SaeStorage();
+$storage = new SaeStorage();
 $domain = 'o';
 $attr = array('encoding'=>'gzip');
 $result = $storage->upload($domain,$f, $f1, -1, $attr, true);
