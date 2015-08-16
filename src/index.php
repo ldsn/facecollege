@@ -1,34 +1,69 @@
 <?php
-$hostsae = 'http://facecollege-o.stor.sinaapp.com/';
+$college = array(
+    0=>'文学院',    
+	1=>'外国语学院',
+    2=>'历史文化学院',
+    3=>'马克思主义学院',
+    4=>'法学院',
+    5=>'教育科学学院',
+    6=>'教师教育学院',
+    7=>'商学院',
+    8=>'数学与统计科学学院',
+    9=>'物理与光电工程学院',
+    10=>'化学与材料科学学院',
+    11=>'生命科学学院',
+    12=>'地理与规划学院',
+    13=>'交通学院',
+    14=>'土木工程学院',
+    15=>'信息与电气工程学院',
+    16=>'食品工程学院',
+    17=>'农学院',
+    18=>'艺术学院',
+    19=>'体育学院',
+    20=>'国际教育学院',
+    21=>'蔚山船舶与海洋学院',
+    22=>'大学外语教学部',
+    23=>'中国思想文化研究院',
+    24=>'环渤海发展研究院',
+    25=>'菌物科学与技术研究院',
+    26=>'胶东文化研究院'
+);
+$total_college = count($college);
+
+
+$host_sae = 'http://facecollege-o.stor.sinaapp.com/uploads/';
+
 if(empty($_FILES['face'])){
     echo 'Welcome to <a href="http://sailboat.ldustu.com">LDSN</a> .';
     return;
 } else {
     $filename = $_FILES['face']['name'];
     $tmp_name = $_FILES['face']['tmp_name'];
-    if(!stripos($_FILES['face']['type'],'image')){
-        return;
-    }
 
     $tmp_file_name_arr  = explode('.',$filename);
     $new_file_name      = $tmp_file_name_arr[0].'_'.time().'.'.$tmp_file_name_arr[1];
     if(file_exists($_FILES['face']['tmp_name'])){
-        //file_put_contents('uploads/'.$new_file_name, file_get_contents($_FILES['face']['tmp_name']));
-        savefile($tmpname, $new_file_name);
+        savefile($tmp_name, $new_file_name);
     } else {
-        echo 'no';
+        $result             = array('status'=>-1, 'msg'=>'上传图片失败');
+        echo json_encode( $result );
         return;
     }
     
-    //$url                = 'http://'.$_SERVER["HTTP_HOST"].'/uploads/'.$new_file_name;
-    $url = $hostsae . $new_file_name;
+    $url = $host_sae . $new_file_name;
     $result             = array('status'=>1, 'msg'=>'ok', 'info'=>array('url'=>$url));
-    if(!stripos($url, 'localhost')){
-        $r                  = detect($url);
-        if($r['status']==1){
-            $result['info']['output']   = $r['output'];
+    $r                  = detect($url);
+    if($r['status']==1){
+        if(empty($r['output']['face'])){
+        	delfile($new_file_name);
+            $result             = array('status'=>-2, 'msg'=>'上传的图片没有脸呀，亲');
+            echo json_encode( $result );
+            return;
         }
-    }   
+        $college_id = charge($r['output']);
+        $result['info']['college']	= array( 'id' => $college_id, 'name'=> $college[$college_id] );
+        $result['info']['face']   = $r['output']['face'];
+    }
     echo json_encode($result);
     return;
 }
@@ -42,23 +77,31 @@ function detect($url){
     $api_url .= '?api_key='.$api_key.'&api_secret='.$api_secret;
     $api_url .= '&url='.urlencode($url);
     $api_url .= '&attribute=glass,pose,gender,age,race,smiling';
-    $ch = curl_init($url) ;  
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true) ; // 获取数据返回  
-    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true) ; // 在启用 CURLOPT_RETURNTRANSFER 时候将获取数据返回  
-    $output = curl_exec($ch) ;
-    return array('status'=>1, 'output'=>$output );
+    $output = file_get_contents($api_url);
+    return array('status'=>1, 'output'=>json_decode($output,true) );
 }
 
 
-function savefile($f,$f1){
-$storage = new SaeStorage();
-$domain = 'o';
-$attr = array('encoding'=>'gzip');
-$result = $storage->upload($domain,$f, $f1, -1, $attr, true);
+function savefile($f, $f1){
+	$storage = new SaeStorage();
+	$domain = 'o';
+    $result = $storage->upload($domain,'/uploads/'.$f1, $f);
 }
 
+function delfile($f){
+    $s = new SaeStorage();
+    $domain = 'o';
+    $result = $s->delete($domain, '/uploads/'.$f);
+}
 
+function charge($out){
+    global $total_college;
+    $f = $out['face'][0]['attribute'];
+    $total = $f['age']['value'] + getInt($f['gender']['confidence']) + getInt($f['glass']['confidence']) + getInt($f['race']['confidence']) + getInt($f['smiling']['value']);
+    return $total % $total_college;
+}
 
-
-
-
+function getInt($n){
+    $t = intval( $n * 1000 );
+    return (100000 - $t);
+}
