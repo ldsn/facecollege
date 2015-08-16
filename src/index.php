@@ -3,14 +3,12 @@ if(empty($_FILES['face'])){
     echo 'Welcome to <a href="http://sailboat.ldustu.com">LDSN</a> .';
     return;
 } else {
-    var_dump($_FILES);
     $filename = $_FILES['face']['name'];
     $tmp_name = $_FILES['face']['tmp_name'];
 
-
     $tmp_file_name_arr  = explode('.',$filename);
     $new_file_name      = $tmp_file_name_arr[0].'_'.time().'.'.$tmp_file_name_arr[1];
-    rename($tmp_name, './uploads/'.$new_file_name);
+    copy($tmp_name, './uploads/'.$new_file_name);
 
     $url                = 'http://'.$_SERVER["HTTP_HOST"].'/uploads/'.$new_file_name;
     $result             = array('status'=>1, 'msg'=>'ok', 'info'=>array('url'=>$url));
@@ -33,6 +31,9 @@ function detect($url){
     $api_url .= '?api_key='.$api_key.'&api_secret='.$api_secret;
     $api_url .= '&url='.urlencode($url);
     $api_url .= '&attribute=glass,pose,gender,age,race,smiling';
-
-    return array('status'=>1, 'output'=>file_get_contents($api_url) );
+    $ch = curl_init($url) ;  
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true) ; // 获取数据返回  
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true) ; // 在启用 CURLOPT_RETURNTRANSFER 时候将获取数据返回  
+    $output = curl_exec($ch) ;
+    return array('status'=>1, 'output'=>$output );
 }
